@@ -76,7 +76,7 @@ export function Login() {
               {club?.name?.[0] ?? 'G'}
             </div>
           )}
-          <h1 className="text-xl font-bold text-gray-900">{club?.name ?? 'YourClub'}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{club?.name ?? 'ClubHub'}</h1>
           <p className="text-sm text-gray-500">Member portal</p>
         </div>
 
@@ -160,7 +160,7 @@ export function Login() {
           )}
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-4">Powered by YourClub</p>
+        <p className="text-center text-xs text-gray-400 mt-4">Powered by ClubHub</p>
       </div>
     </div>
   );

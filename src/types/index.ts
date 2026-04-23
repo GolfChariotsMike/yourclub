@@ -1,4 +1,4 @@
-// YourClub — All TypeScript Types
+// ClubHub — All TypeScript Types
 
 export interface Club {
   id: string;

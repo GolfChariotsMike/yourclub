@@ -51,7 +51,7 @@ export function Sidebar({ club }: SidebarProps) {
           </div>
         )}
         <div className="min-w-0">
-          <p className="font-semibold text-sm truncate">{club?.name ?? 'YourClub'}</p>
+          <p className="font-semibold text-sm truncate">{club?.name ?? 'ClubHub'}</p>
           <p className="text-xs text-gray-400">Admin Portal</p>
         </div>
       </div>
