@@ -40,6 +40,8 @@ export function AdminSettings() {
     { id: 'integrations', label: 'Integrations' },
   ];
 
+  if (!profile?.club_id) return (<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" /></div>);
+
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold text-gray-900">Settings</h1>

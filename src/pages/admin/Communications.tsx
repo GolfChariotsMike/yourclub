@@ -69,6 +69,8 @@ export function AdminCommunications() {
     news: 'info',
   };
 
+  if (!profile?.club_id) return (<div className="p-6 flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" /></div>);
+
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
