@@ -288,6 +288,7 @@ function MemberEditModal({
       renewal_date: form.renewal_date || null,
       expiry_date: form.expiry_date || null,
       join_date: form.join_date || null,
+      membership_type_id: form.membership_type_id || null,
     };
     const { error: err } = isNew
       ? await supabase.from('members').insert(payload)
