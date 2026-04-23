@@ -278,6 +278,10 @@ function MemberEditModal({
       club_id: clubId,
       status: form.status as import('../../types').MemberStatus,
       handicap: form.handicap ? parseFloat(form.handicap) : null,
+      date_of_birth: form.date_of_birth || null,
+      renewal_date: form.renewal_date || null,
+      expiry_date: form.expiry_date || null,
+      join_date: form.join_date || null,
     };
     const { error: err } = isNew
       ? await supabase.from('members').insert(payload)
