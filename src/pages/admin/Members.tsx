@@ -12,6 +12,112 @@ import { Modal } from '../../components/ui/Modal';
 import { Table } from '../../components/ui/Table';
 import type { Member, MembershipType, MemberAccount, MemberAccountTransaction } from '../../types';
 
+function MemberList({ members, loading, onEdit, onWallet }: {
+  members: Member[];
+  loading: boolean;
+  onEdit: (m: Member) => void;
+  onWallet: (m: Member) => void;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (loading) return (
+    <div className="bg-white rounded-xl border border-gray-200 p-8 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
+    </div>
+  );
+
+  if (members.length === 0) return (
+    <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">No members found</div>
+  );
+
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      {/* Header */}
+      <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-4 px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <span>Name</span>
+        <span>GolfLink</span>
+        <span>Type</span>
+        <span>Status</span>
+        <span>Handicap</span>
+        <span className="w-6" />
+      </div>
+      <div className="divide-y divide-gray-100">
+        {members.map(m => {
+          const isExpanded = expandedId === m.id;
+          const acc = m.account as MemberAccount | undefined;
+          return (
+            <div key={m.id}>
+              {/* Main row */}
+              <div
+                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => setExpandedId(isExpanded ? null : m.id)}
+              >
+                <div>
+                  <p className="font-medium text-gray-900">{m.first_name} {m.last_name}</p>
+                  <p className="text-xs text-gray-400">{m.email}</p>
+                </div>
+                <span className="text-sm text-gray-600 font-mono">{m.golf_id ?? '—'}</span>
+                <span className="text-sm text-gray-600">{(m.membership_type as MembershipType | undefined)?.name ?? '—'}</span>
+                <MemberStatusBadge status={m.status} />
+                <span className="text-sm text-gray-600">{m.handicap ?? '—'}</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </div>
+
+              {/* Expanded row */}
+              {isExpanded && (
+                <div className="px-4 pb-4 bg-gray-50 border-t border-gray-100">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 text-sm">
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Phone</p>
+                      <p className="text-gray-700">{m.phone ?? '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Date of Birth</p>
+                      <p className="text-gray-700">{m.date_of_birth ? format(new Date(m.date_of_birth), 'd MMM yyyy') : '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Renewal Date</p>
+                      <p className="text-gray-700">{m.renewal_date ? format(new Date(m.renewal_date as string), 'd MMM yyyy') : '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Join Date</p>
+                      <p className="text-gray-700">{m.join_date ? format(new Date(m.join_date as string), 'd MMM yyyy') : '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Address</p>
+                      <p className="text-gray-700">{[m.address, m.suburb, m.state, m.postcode].filter(Boolean).join(', ') || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Wallet (Credits / Prize)</p>
+                      <button className="text-blue-600 hover:underline" onClick={e => { e.stopPropagation(); onWallet(m); }}>
+                        ${(acc?.credit_balance ?? 0).toFixed(2)} / ${(acc?.prize_balance ?? 0).toFixed(2)}
+                      </button>
+                    </div>
+                    {m.notes && (
+                      <div className="col-span-2">
+                        <p className="text-xs text-gray-400 mb-0.5">Notes</p>
+                        <p className="text-gray-700">{m.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      className="px-3 py-1.5 text-xs font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
+                      onClick={e => { e.stopPropagation(); onEdit(m); }}
+                    >
+                      Edit Member
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function AdminMembers() {
   const { profile } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -144,51 +250,12 @@ export function AdminMembers() {
         </div>
       </Card>
 
-      {/* Members Table */}
-      <Table
+      {/* Members List */}
+      <MemberList
+        members={filtered}
         loading={loading}
-        data={filtered}
-        emptyMessage="No members found"
-        onRowClick={m => setSelectedMember(m)}
-        columns={[
-          {
-            key: 'name',
-            label: 'Name',
-            render: m => (
-              <div>
-                <p className="font-medium">{m.first_name} {m.last_name}</p>
-                <p className="text-xs text-gray-400">{m.email}</p>
-              </div>
-            ),
-          },
-          {
-            key: 'membership_type',
-            label: 'Type',
-            render: m => <span>{(m.membership_type as MembershipType | undefined)?.name ?? '—'}</span>,
-          },
-          { key: 'status', label: 'Status', render: m => <MemberStatusBadge status={m.status as string} /> },
-          { key: 'handicap', label: 'Handicap', render: m => <span>{m.handicap ?? '—'}</span> },
-          {
-            key: 'renewal_date',
-            label: 'Renewal',
-            render: m => <span>{m.renewal_date ? format(new Date(m.renewal_date as string), 'd MMM yyyy') : '—'}</span>,
-          },
-          {
-            key: 'wallet',
-            label: 'Wallet',
-            render: m => {
-              const acc = m.account as MemberAccount | undefined;
-              return (
-                <button
-                  className="text-xs text-blue-600 hover:underline"
-                  onClick={e => { e.stopPropagation(); openWallet(m as Member); }}
-                >
-                  ${(acc?.credit_balance ?? 0).toFixed(2)} / ${(acc?.prize_balance ?? 0).toFixed(2)}
-                </button>
-              );
-            },
-          },
-        ]}
+        onEdit={m => setSelectedMember(m)}
+        onWallet={m => openWallet(m)}
       />
 
       {/* Member Edit Modal */}
