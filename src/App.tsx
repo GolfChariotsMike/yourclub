@@ -17,7 +17,16 @@ import { MemberNews } from './pages/member/News';
 import { Login, AuthCallback } from './pages/auth/Login';
 import { MobileScorecard } from './pages/score/MobileScorecard';
 import { ClubSetup } from './pages/onboarding/ClubSetup';
+import { SuperDashboard } from './pages/super/SuperDashboard';
 import { PageSpinner } from './components/ui/Spinner';
+
+function SuperGuard({ children }: { children: React.ReactNode }) {
+  const { user, profile, loading } = useAuth();
+  if (loading) return <PageSpinner />;
+  if (!user || !profile) return <Navigate to="/login" replace />;
+  if (profile.role !== 'super_admin') return <Navigate to="/admin" replace />;
+  return <>{children}</>;
+}
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
@@ -42,6 +51,9 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/score/:entryId" element={<MobileScorecard />} />
+
+        {/* Super Admin */}
+        <Route path="/super" element={<SuperGuard><SuperDashboard /></SuperGuard>} />
 
         {/* Onboarding */}
         <Route path="/setup" element={<MemberGuard><ClubSetup /></MemberGuard>} />

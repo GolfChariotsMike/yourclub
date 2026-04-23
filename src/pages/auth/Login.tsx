@@ -40,7 +40,9 @@ export function Login() {
     } else {
       // Check if admin or member
       const { data: profile } = await supabase.from('profiles').select('role').eq('id', (await supabase.auth.getUser()).data.user?.id ?? '').single();
-      if (profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'comp_admin') {
+      if (profile?.role === 'super_admin') {
+        navigate('/super');
+      } else if (profile?.role === 'admin' || profile?.role === 'comp_admin') {
         navigate('/admin');
       } else {
         navigate('/portal');
@@ -174,7 +176,9 @@ export function AuthCallback() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-        if (profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'comp_admin') {
+        if (profile?.role === 'super_admin') {
+          navigate('/super');
+        } else if (profile?.role === 'admin' || profile?.role === 'comp_admin') {
           navigate('/admin');
         } else {
           navigate('/portal');
