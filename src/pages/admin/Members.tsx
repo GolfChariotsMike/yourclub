@@ -261,7 +261,7 @@ function MemberEditModal({
     date_of_birth: member?.date_of_birth ?? '',
     gender: member?.gender ?? 'M',
     golf_id: member?.golf_id ?? '',
-    membership_type_id: member?.membership_type_id ?? (membershipTypes[0]?.id ?? ''),
+    membership_type_id: member?.membership_type_id ?? '',
     status: member?.status ?? 'active',
     join_date: member?.join_date ?? format(new Date(), 'yyyy-MM-dd'),
     renewal_date: member?.renewal_date ?? '',
@@ -319,7 +319,7 @@ function MemberEditModal({
           label="Membership Type"
           value={form.membership_type_id}
           onChange={e => setForm(f => ({ ...f, membership_type_id: e.target.value }))}
-          options={membershipTypes.map(t => ({ value: t.id, label: t.name }))}
+          options={[{ value: '', label: '— None —' }, ...membershipTypes.map(t => ({ value: t.id, label: t.name }))]}
         />
         <Select
           label="Status"
